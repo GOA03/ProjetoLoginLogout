@@ -114,19 +114,4 @@ public class AvisosView extends JFrame {
     public void adicionarAviso(String aviso) {
         avisosArea.append(aviso + "\n");
     }
-
-    // Método main para executar a view
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    AvisosView frame = new AvisosView();
-                    frame.setLocationRelativeTo(null); // Centraliza a janela
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 }
