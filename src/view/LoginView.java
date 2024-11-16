@@ -1,15 +1,7 @@
 package view;
 
 import javax.swing.*;
-
-import org.json.simple.JSONObject;
-
-import controller.JSONController;
-import model.ClienteModel;
-import model.UsuarioModel;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginView extends JFrame {
@@ -18,12 +10,8 @@ public class LoginView extends JFrame {
     private JTextField raField;
     private JPasswordField passwordField;
     private JButton loginButton, registerButton;
-	private ClienteModel cliente;
 
-    public LoginView(ClienteModel cliente) {
-    	
-    	this.cliente = cliente;
-    	
+    public LoginView() {
         setTitle("Login");
         setSize(400, 184);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,50 +22,16 @@ public class LoginView extends JFrame {
 
         JLabel lblRa = new JLabel("RA:");
         raField = new JTextField();
-        raField.setPreferredSize(new Dimension(150, 25)); 
+        raField.setPreferredSize(new Dimension(150, 25)); // Ajusta o tamanho do campo
 
         JLabel lblSenha = new JLabel("Senha:");
         passwordField = new JPasswordField();
-        passwordField.setPreferredSize(new Dimension(150, 25)); 
-        
-        loginButton = new JButton("Login");
-        
-        // Adicionar ActionListener para o botão Login
-        
-        loginButton.addActionListener(new ActionListener() {
-        	
-			public void actionPerformed(ActionEvent e) {
-				
-				try {
-		            
-		            int ra = Integer.parseInt(raField.getText()); // Converte String para inteiro
-		            @SuppressWarnings("deprecation")
-					String senha = passwordField.getText();
-		            
-		            UsuarioModel usuario = new UsuarioModel();
-		            usuario.setOperacao("login");
-		            usuario.setRa(ra);
-		            usuario.setSenha(senha);
-		            
-		            JSONController loginController = new JSONController();
-					JSONObject res = loginController.changeToJSON(usuario);
-					
-					loginUsuario(res);
-		            
-				} catch (NumberFormatException ex) {
-		            JOptionPane.showMessageDialog(null, "RA inválido. Por favor, insira um número.");
-		        }
-			}
-		});
-        
-        registerButton = new JButton("Cadastrar");
-        
-        // Adicionar ActionListener para o botão Cadastrar
-        registerButton.addActionListener(e -> {
-            this.dispose(); // Fecha a tela de login
-            new CadastroView().setVisible(true); // Abre a tela de cadastro
-        });
+        passwordField.setPreferredSize(new Dimension(150, 25)); // Ajusta o tamanho do campo
 
+        loginButton = new JButton("Login");
+        registerButton = new JButton("Cadastrar");
+
+        // Usando GroupLayout para garantir compatibilidade com WindowBuilder
         GroupLayout layout = new GroupLayout(panel);
         panel.setLayout(layout);
         layout.setAutoCreateGaps(true);
@@ -111,16 +65,13 @@ public class LoginView extends JFrame {
                     .addComponent(registerButton))
                 .addGap(30) // Espaço do fundo
         );
+
+        // Adicionar ActionListener para o botão Cadastrar
+        registerButton.addActionListener(e -> {
+            this.dispose(); // Fecha a tela de login
+            new CadastroView().setVisible(true); // Abre a tela de cadastro
+        });
     }
-    
-    public void loginUsuario(JSONObject res) {
-		if(this.cliente == null) {
-			System.err.println("O cliente está nulo, você deve primeiro inicializar o cliente e o servidor");
-			 
-		}else {			
-			this.cliente.enviarMensagem(res);
-		}
-	}
 
     public String getRa() {
         return raField.getText();

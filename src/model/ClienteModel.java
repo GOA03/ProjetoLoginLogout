@@ -3,10 +3,7 @@ package model;
 import java.io.*;
 import java.net.*;
 
-import org.json.simple.JSONObject;
-
 public class ClienteModel {
-	
     private Socket socketEcho;
     private PrintWriter saida;
     private BufferedReader entrada;
@@ -33,10 +30,5 @@ public class ClienteModel {
         if (saida != null) saida.close();
         if (entrada != null) entrada.close();
         if (socketEcho != null) socketEcho.close();
-    }
-    
-    public void enviarMensagem(JSONObject msg) {
-    	this.saida.println(msg);
-    	System.out.println("MENSAGEM ENVIADA AO SERVIDOR: " + msg);
     }
 }

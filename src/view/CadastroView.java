@@ -78,7 +78,7 @@ public class CadastroView extends JFrame {
         // Adicionar ActionListener para o botão Voltar
         voltarButton.addActionListener(e -> {
             this.dispose(); // Fecha a tela de cadastro
-            new LoginView(null).setVisible(true); // Abre a tela de login
+            new LoginView().setVisible(true); // Abre a tela de login
         });
     }
 
