@@ -43,7 +43,7 @@ public class JSONController {
         UsuarioModel usuario = new UsuarioModel();
         
         if (jsonObject.containsKey("ra")) {
-            usuario.setRa(((Long) jsonObject.get("ra")).intValue());  // Convertendo Long para Integer
+            usuario.setRa(((Integer) jsonObject.get("ra")).intValue());  // Convertendo Long para Integer
         }
         
         if (jsonObject.containsKey("senha")) {
@@ -82,7 +82,7 @@ public class JSONController {
 
 			JSONObject jsonObject = (JSONObject) parser.parse(mensagemRecebida);
 
-			int ra = (int) jsonObject.get("ra");
+			Integer ra = (Integer) jsonObject.get("ra");
 			usuario.setRa(ra);
 
 			String senha = (String) jsonObject.get("senha");
