@@ -2,7 +2,10 @@ package model;
 
 import java.io.*;
 import java.net.*;
+import java.text.ParseException;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import controller.JSONController;
 import view.AvisosView;
@@ -25,6 +28,7 @@ public class ClienteModel {
     	this.saida = new PrintWriter(socketEcho.getOutputStream(), true);
     	this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
     	this.jsonController = new JSONController();
+    	this.loginView = new LoginView(this);
         
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
@@ -70,10 +74,10 @@ public class ClienteModel {
         threadEscuta.start();
     }
 
-    public void fecharLoginView() {
-    	
-    	this.loginView.dispose(); // Fecha a tela de login
-    }
+	protected void fecharLoginView() {
+		
+		this.loginView.dispose();
+	}
 
 	// Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
@@ -83,6 +87,12 @@ public class ClienteModel {
     // Receber resposta do servidor (método sincronizado)
     public synchronized String receberResposta() throws IOException {
         return entrada.readLine();
+    }
+    
+    public JSONObject receberRespostaJSON() throws IOException, ParseException, org.json.simple.parser.ParseException {
+        String resposta = receberResposta(); // Chama o método que lê a resposta do servidor
+        JSONParser parser = new JSONParser();
+        return (JSONObject) parser.parse(resposta); // Converte a resposta para JSONObject
     }
 
     // Fechar a conexão (método sincronizado)
