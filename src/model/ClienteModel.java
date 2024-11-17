@@ -111,6 +111,11 @@ public class ClienteModel {
     public void logarAvisosView(int token) {
     	
     	this.token = token;
+    	
+    	// Fechar a tela de login antes de abrir a tela de avisos
+        if (this.loginView != null) {
+            this.loginView.dispose(); // Fecha a tela de login
+        }
 
         // Cria e torna a janela de AvisosView visível
         this.avisosView = new AvisosView(this, this.token);
