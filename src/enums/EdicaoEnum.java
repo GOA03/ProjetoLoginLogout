@@ -9,4 +9,8 @@ private final int valor;
 	EdicaoEnum(int valor) {
 		this.valor = valor;
 	}
+
+	public int getValor() {
+		return valor;
+	}
 }

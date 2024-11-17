@@ -2,6 +2,9 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import model.ClienteModel;
+
 import java.awt.*;
 
 public class AvisosView extends JFrame {
@@ -16,7 +19,7 @@ public class AvisosView extends JFrame {
     private JTextArea avisosArea;
     private JButton btnAtualizar;
 
-    public AvisosView() {
+    public AvisosView(ClienteModel cliente, int token) {
         setTitle("Avisos e Notícias");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 500);

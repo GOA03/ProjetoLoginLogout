@@ -6,22 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 
 public class ServidorController {
-    
+	
     private InterfaceServidorView view;
     
     public ServidorController(InterfaceServidorView view, ServidorModel model) {
-        this.view = view;
         
-        try {
-            // Conectar ao banco de dados
-            model.conectarBD();
-        } catch (SQLException e) {
-            view.getRetornoServidor().append("Erro ao conectar ao banco de dados: " + e.getMessage() + "\n");
-        }
-        
+    	this.view = view;
         this.view.adicionarActionListenerConectar(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int porta = Integer.parseInt(view.getPortaServidor().getText());

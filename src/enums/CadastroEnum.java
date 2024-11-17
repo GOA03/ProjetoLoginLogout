@@ -11,4 +11,8 @@ public enum CadastroEnum {
 	CadastroEnum(int valor) {
 		this.valor = valor;
 	}
+
+	public int getValor() {
+		return valor;
+	}
 }

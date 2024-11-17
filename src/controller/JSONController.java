@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import model.Resposta;
+import model.RespostaModel;
 import model.UsuarioModel;
 
 public class JSONController {
@@ -82,8 +82,8 @@ public class JSONController {
 
 			JSONObject jsonObject = (JSONObject) parser.parse(mensagemRecebida);
 
-			Integer ra = (Integer) jsonObject.get("ra");
-			usuario.setRa(ra);
+			long ra = (Long) jsonObject.get("ra");
+			usuario.setRa((int) ra); // Converte Long para int
 
 			String senha = (String) jsonObject.get("senha");
 			usuario.setSenha(senha);
@@ -97,7 +97,7 @@ public class JSONController {
 	}
 
 	@SuppressWarnings("unchecked") // Suprime o alerta de tipo não parametrizado
-	public JSONObject changeReponseToJson(Resposta resposta) {
+	public JSONObject changeResponseToJson(RespostaModel resposta) {
 		JSONObject res = new JSONObject();
 		
 	    res.put("operacao", resposta.getOperacao());
@@ -113,5 +113,50 @@ public class JSONController {
 	        res.put("token", resposta.getToken());
 	    }
 	    return res;
+	}
+
+	public RespostaModel changeResponseToJson(String msg) {
+	    RespostaModel respostaModel = new RespostaModel();
+	    JSONParser parser = new JSONParser();
+	    
+	    try {
+	        // Parse a string JSON para um objeto JSONObject
+	        JSONObject jsonObject = (JSONObject) parser.parse(msg);
+	        
+	        // Mapeando os dados do JSON para o modelo RespostaModel
+	        if (jsonObject.containsKey("operacao")) {
+	            respostaModel.setOperacao((String) jsonObject.get("operacao"));
+	        }
+	        
+	        if (jsonObject.containsKey("ra")) {
+	            respostaModel.setRa(((Long) jsonObject.get("ra")).intValue());  // Convertendo Long para int
+	        }
+	        
+	        if (jsonObject.containsKey("senha")) {
+	            respostaModel.setSenha((String) jsonObject.get("senha"));
+	        }
+	        
+	        if (jsonObject.containsKey("nome")) {
+	            respostaModel.setNome((String) jsonObject.get("nome"));
+	        }
+	        
+	        if (jsonObject.containsKey("status")) {
+	            respostaModel.setStatus(((Long) jsonObject.get("status")).intValue());  // Convertendo Long para int
+	        }
+	        
+	        if (jsonObject.containsKey("token")) {
+	            respostaModel.setToken(((Long) jsonObject.get("token")).intValue());  // Convertendo Long para Integer
+	        }
+	        
+	        if (jsonObject.containsKey("msg")) {
+	            respostaModel.setMsg((String) jsonObject.get("msg"));
+	        }
+	        
+	        return respostaModel;
+	        
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	        return null;  // Retorna null em caso de erro de parsing
+	    }
 	}
 }

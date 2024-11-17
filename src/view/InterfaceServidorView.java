@@ -6,7 +6,6 @@ import java.awt.event.ActionListener;
 import model.ServidorModel;
 import controller.ServidorController;
 
-
 public class InterfaceServidorView extends JFrame {
 
     private static final long serialVersionUID = 1L;

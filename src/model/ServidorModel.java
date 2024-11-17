@@ -2,130 +2,131 @@ package model;
 
 import java.io.*;
 import java.net.*;
-import java.sql.*;
 import java.sql.SQLException;
 
+import org.json.simple.JSONObject;
+
+import controller.JSONController;
+import controller.LoginController;
+import enums.LoginEnum;
+
 public class ServidorModel {
-    private ServerSocket serverSocket;
-    private Connection connection;
+	private ServerSocket serverSocket;
 
-    // Conectar ao banco de dados
-    public void conectarBD() throws SQLException {
-        try {
-            String url = "jdbc:mysql://localhost:3306/sistemaavisos";
-            String usuario = "root";
-            String senha = "";
-            connection = DriverManager.getConnection(url, usuario, senha);
-        } catch (SQLException e) {
-            throw new SQLException("Erro ao conectar ao banco de dados: " + e.getMessage());
-        }
-    }
+	// Método para iniciar o servidor
+	public void iniciarServidor(int porta) throws IOException {
+		try {
+			serverSocket = new ServerSocket(porta, 50, InetAddress.getByName("0.0.0.0"));
+			System.out.println("Servidor iniciado na porta " + porta);
+		} catch (IOException e) {
+			System.err.println("Erro ao iniciar o servidor na porta " + porta + ": " + e.getMessage());
+			throw new IOException("Não foi possível iniciar o servidor.");
+		}
+	}
 
-    // Validar login
-    public boolean validarLogin(int ra, String senha) throws SQLException {
-        String sql = "SELECT * FROM usuarios WHERE ra = ? AND senha = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, ra);
-            stmt.setString(2, senha);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next(); // Se encontrar o usuário, retorna true
-        }
-    }
+	// Método para esperar a conexão de um cliente
+	public Socket esperarConexao() throws IOException {
+		System.out.println("Aguardando conexão de um cliente...");
+		try {
+			Socket socketCliente = serverSocket.accept();
+			System.out.println("Cliente conectado: " + socketCliente.getInetAddress());
+			return socketCliente;
+		} catch (IOException e) {
+			System.err.println("Erro ao aguardar conexão de um cliente: " + e.getMessage());
+			throw new IOException("Erro ao aceitar a conexão do cliente.");
+		}
+	}
 
-    // Realizar cadastro
-    public boolean cadastrarUsuario(int ra, String senha, String nome) throws SQLException {
-        String sql = "INSERT INTO usuarios (ra, senha, nome) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, ra);
-            stmt.setString(2, senha);
-            stmt.setString(3, nome);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-        }
-    }
+	// Método para fechar o servidor
+	public void fecharServidor() throws IOException {
+		if (serverSocket != null && !serverSocket.isClosed()) {
+			try {
+				serverSocket.close();
+				System.out.println("Servidor fechado com sucesso.");
+			} catch (IOException e) {
+				System.err.println("Erro ao fechar o servidor: " + e.getMessage());
+				throw new IOException("Não foi possível fechar o servidor.");
+			}
+		}
+	}
 
-    public void iniciarServidor(int porta) throws IOException {
-        serverSocket = new ServerSocket(porta, 50, InetAddress.getByName("0.0.0.0"));
-    }
+	// Método para lidar com a comunicação com o cliente
+	public void lidarComCliente(Socket socketCliente, ServidorListener listener) {
+		new Thread(() -> {
+			
+			JSONController jsonController = new JSONController();
+			LoginController loginController = new LoginController();
+			
+			try (
+					PrintWriter saida = new PrintWriter(socketCliente.getOutputStream(), true);
+					BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
+			) {
+				// Notificando a conexão do cliente
+				listener.onConexao(socketCliente.getInetAddress().toString());
+				System.out.println("Novo cliente conectado: " + socketCliente.getInetAddress());
 
-    public Socket esperarConexao() throws IOException {
-        return serverSocket.accept();
-    }
+				String mensagemRecebida;
+				// Laço para ler as mensagens do cliente
+				while ((mensagemRecebida = entrada.readLine()) != null) {
+					System.out.println("Mensagem recebida: " + mensagemRecebida);
+					listener.onMensagemRecebida(mensagemRecebida);
+					String op = jsonController.getOperacao(mensagemRecebida);
+					switch(op) {
+						case "login":{
+							UsuarioModel usuario = jsonController.changeLoginToJSON(mensagemRecebida);
+							LoginEnum loginValido = loginController.validarLogin(usuario);
+							RespostaModel resposta = new RespostaModel();
+							resposta.setOperacao("login");
+							switch(loginValido) {
+								case SUCESSO:{
+									resposta.setStatus(200);
+									Integer token;
+									try {
+										token = loginController.getRa(usuario.getRa());
+										resposta.setToken(token);
+										JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+										saida.println(respostaJSON);
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+									break;
+								} case ERRO_USUARIO_E_SENHA:{
+									resposta.setMsg("Login ou senha incorreto");
+				            		resposta.setStatus(401);
+				            		JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+				            		saida.println(respostaJSON);
+				            		break;
+								}
+							}
+							break;							
+						}
+					}
+				}
+			} catch (IOException e) {
+				// Tratamento de erro na comunicação
+				listener.onErro("Erro na comunicação com o cliente: " + e.getMessage());
+				System.err.println("Erro na comunicação com o cliente: " + e.getMessage());
+			} finally {
+				try {
+					socketCliente.close();
+					System.out.println("Conexão com o cliente fechada.");
+				} catch (IOException e) {
+					// Erro ao fechar o socket
+					listener.onErro("Erro ao fechar a conexão com o cliente: " + e.getMessage());
+					System.err.println("Erro ao fechar a conexão com o cliente: " + e.getMessage());
+				}
+			}
+		}).start();
+	}
 
-    public void fecharServidor() throws IOException {
-        if (serverSocket != null) {
-            serverSocket.close();
-        }
-    }
+	// Interface que define os métodos que o ouvinte (listener) deve implementar
+	public interface ServidorListener {
+		void onConexao(String clienteInfo);
 
-    public void lidarComCliente(Socket socketCliente, ServidorListener listener) {
-        new Thread(() -> {
-            try (
-                PrintWriter saida = new PrintWriter(socketCliente.getOutputStream(), true);
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()))
-            ) {
-                String linha;
-                while ((linha = entrada.readLine()) != null) {
-                    // Processa a mensagem JSON do cliente
-                    String resposta = processarMensagem(linha);
-                    saida.println(resposta);
-                }
-            } catch (IOException e) {
-                listener.onErro("Erro na comunicação com o cliente: " + e.getMessage());
-            } finally {
-                try {
-                    socketCliente.close();
-                } catch (IOException e) {
-                    listener.onErro("Erro ao fechar a conexão com o cliente: " + e.getMessage());
-                }
-            }
-        }).start();
-    }
+		void onMensagemRecebida(String mensagem);
 
-    private String processarMensagem(String mensagem) {
-        // Exemplo de parsing da mensagem JSON (usando biblioteca como org.json ou Gson)
-        // Aqui você irá converter a mensagem JSON para um objeto e processá-la de acordo
-        // com a operação (login ou cadastro)
-        JSONObject json = new JSONObject(mensagem);
-        String operacao = json.getString("operacao");
+		void onDesconexao();
 
-        switch (operacao) {
-            case "login":
-                int raLogin = json.getInt("ra");
-                String senhaLogin = json.getString("senha");
-                try {
-                    if (validarLogin(raLogin, senhaLogin)) {
-                        return "{\"status\": 200, \"token\": \"username\"}";
-                    } else {
-                        return "{\"status\": 401, \"mensagem\": \"Erro ao realizar login.\"}";
-                    }
-                } catch (SQLException e) {
-                    return "{\"status\": 500, \"mensagem\": \"Erro ao acessar o banco de dados.\"}";
-                }
-
-            case "cadastrarUsuario":
-                int raCadastro = json.getInt("ra");
-                String senhaCadastro = json.getString("senha");
-                String nomeCadastro = json.getString("nome");
-                try {
-                    if (cadastrarUsuario(raCadastro, senhaCadastro, nomeCadastro)) {
-                        return "{\"status\": 201, \"mensagem\": \"Cadastro realizado com sucesso.\"}";
-                    } else {
-                        return "{\"status\": 401, \"mensagem\": \"Erro ao cadastrar.\"}";
-                    }
-                } catch (SQLException e) {
-                    return "{\"status\": 500, \"mensagem\": \"Erro ao acessar o banco de dados.\"}";
-                }
-
-            default:
-                return "{\"status\": 400, \"mensagem\": \"Operação inválida.\"}";
-        }
-    }
-
-    public interface ServidorListener {
-        void onConexao(String clienteInfo);
-        void onMensagemRecebida(String mensagem);
-        void onDesconexao();
-        void onErro(String erro);
-    }
+		void onErro(String erro);
+	}
 }

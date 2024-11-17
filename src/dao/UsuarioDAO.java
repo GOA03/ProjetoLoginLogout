@@ -71,10 +71,18 @@ public class UsuarioDAO {
         }
     }
 
-	public Boolean loginUsuario(Integer ra, String senha) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Boolean loginUsuario(Integer ra, String senha) {
+        String query = "SELECT * FROM usuario WHERE ra = ? AND senha = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, ra);
+            stmt.setString(2, senha);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Retorna true se houver um registro correspondente
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Retorna false em caso de erro
+        }
+    }
 
 	public Connection getConn() {
 		return conn;
