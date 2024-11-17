@@ -47,14 +47,12 @@ public class ClienteModel {
                         String operacao = resposta.getOperacao();
                         switch(operacao){    
                         	case "login":{
-                        		String mensagem;
                         		if(status == 200) {
                         			System.out.println("Token/Ra: "+ token);
-                        			logarAvisos(token);
+                        			logarAvisosView(token);
                         			fecharLoginView();
                         		}else if(status == 401) {
-                        			mensagem = "Login inválido";
-                        			respostaTelaLogin(mensagem);
+                        			//respostaTelaLogin("Login inválido");
                         		}else {
                         			System.out.println("Status informado não está cadastrado");
                         		}
@@ -70,7 +68,11 @@ public class ClienteModel {
         threadEscuta.start();
     }
 
-    // Enviar mensagem ao servidor (método sincronizado)
+	protected void fecharLoginView() {
+		
+	}
+
+	// Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
         saida.println(mensagem);
     }
@@ -93,17 +95,12 @@ public class ClienteModel {
         System.out.println("MENSAGEM ENVIADA AO SERVIDOR: " + msg.toString());
     }
     
-    public void logarAvisos(int token) {
+    public void logarAvisosView(int token) {
     	
-		this.token = token;
-		AvisosView avisosView = new AvisosView(this, this.token);
-		this.avisosView = avisosView;
-		this.avisosView.setVisible(true);
-		RespostaModel resposta = new RespostaModel();
-		resposta.setOperacao("receberMensagem");
-		resposta.setToken(this.token);
-		JSONController json = new JSONController();
-		JSONObject resp = json.changeResponseToJson(resposta);
-		this.enviarMensagem(resp);
+    	this.token = token;
+
+        // Cria e torna a janela de AvisosView visível
+        this.avisosView = new AvisosView(this, this.token);
+        this.avisosView.setVisible(true);
 	}
 }
