@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.text.ParseException;
 
+import javax.swing.JOptionPane;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -28,7 +30,6 @@ public class ClienteModel {
     	this.saida = new PrintWriter(socketEcho.getOutputStream(), true);
     	this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
     	this.jsonController = new JSONController();
-    	this.loginView = new LoginView(this);
         
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
@@ -56,9 +57,10 @@ public class ClienteModel {
                         		if(status == 200) {
                         			System.out.println("Token/Ra: "+ token);
                         			logarAvisosView(token);
-                        			fecharLoginView();
+                        			//fecharLoginView();
                         		}else if(status == 401) {
-                        			//respostaTelaLogin("Login inválido");
+                        			
+                        			JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
                         		}else {
                         			System.out.println("Status informado não está cadastrado");
                         		}
@@ -73,11 +75,6 @@ public class ClienteModel {
         });
         threadEscuta.start();
     }
-
-	protected void fecharLoginView() {
-		
-		this.loginView.dispose();
-	}
 
 	// Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
@@ -114,6 +111,7 @@ public class ClienteModel {
     	
     	// Fechar a tela de login antes de abrir a tela de avisos
         if (this.loginView != null) {
+        	System.err.println(this.loginView + "AAAAAAAAAAAAAAAAAAAAA LOGAR AVISO");
             this.loginView.dispose(); // Fecha a tela de login
         }
 

@@ -4,20 +4,27 @@ import java.io.*;
 import java.sql.*;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 public class BancoDados {
 
 	private static Connection conn = null;
 	
 	public static Connection conectar() throws SQLException, IOException{
-		
-		if (conn == null) {
+		try {
 			
-			Properties props = carregarPropriedades();
-			String url = props.getProperty("dburl");
-			conn = DriverManager.getConnection(url, props);
-		}
-		
-		return conn;
+			if (conn == null) {
+				
+				Properties props = carregarPropriedades();
+				String url = props.getProperty("dburl");
+				conn = DriverManager.getConnection(url, props);
+			}
+			
+			return conn;
+		} catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco de dados: " + e.getMessage(), "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+	        throw e;
+	    }
 	}
 	
 	public static Connection desconectar() throws SQLException{
