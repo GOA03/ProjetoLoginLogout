@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import controller.JSONController;
 import view.AvisosView;
+import view.LoginView;
 
 public class ClienteModel {
 
@@ -16,13 +17,14 @@ public class ClienteModel {
     private JSONController jsonController;
     private int token;
 	private AvisosView avisosView;
+	private LoginView loginView;
 
     // Conectar ao servidor (método sincronizado)
     public synchronized void conectar(String ip, int porta) throws IOException {
-        socketEcho = new Socket(ip, porta);
-        saida = new PrintWriter(socketEcho.getOutputStream(), true);
-        entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
-        jsonController = new JSONController();
+    	this.socketEcho = new Socket(ip, porta);
+    	this.saida = new PrintWriter(socketEcho.getOutputStream(), true);
+    	this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
+    	this.jsonController = new JSONController();
         
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
@@ -68,9 +70,10 @@ public class ClienteModel {
         threadEscuta.start();
     }
 
-	protected void fecharLoginView() {
-		
-	}
+    public void fecharLoginView() {
+    	
+    	this.loginView.dispose(); // Fecha a tela de login
+    }
 
 	// Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
