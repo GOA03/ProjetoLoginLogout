@@ -129,7 +129,7 @@ public class JSONController {
 	        }
 	        
 	        if (jsonObject.containsKey("ra")) {
-	            respostaModel.setRa(((Long) jsonObject.get("ra")).intValue());  // Convertendo Long para int
+	            respostaModel.setRa((jsonObject.get("ra"))); 
 	        }
 	        
 	        if (jsonObject.containsKey("senha")) {

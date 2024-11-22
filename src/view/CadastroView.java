@@ -41,21 +41,25 @@ public class CadastroView extends JFrame {
 
         cadastrarButton = new JButton("Cadastrar");
         
+     // Adicionando ActionListener para o botão Cadastrar
         cadastrarButton.addActionListener(new ActionListener() {
-			@SuppressWarnings("deprecation")
+            @SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
-				UsuarioModel usuario = new UsuarioModel();
-				usuario.setOperacao("cadastrarUsuario");
-				usuario.setRa(raField.getText());
-				usuario.setSenha(passwordField.getText());
-				usuario.setNome(nomeField.getText());
-				JSONController cadastroUsuarioController = new JSONController();
-				JSONObject res = cadastroUsuarioController.changeToJSON(candidato);
-				 
-				 registrarCandidato(res);
-			}
+                // Cria um novo objeto UsuarioModel e preenche com os dados do formulário
+                UsuarioModel usuario = new UsuarioModel();
+                usuario.setOperacao("cadastrarUsuario");
+                usuario.setRa(Integer.parseInt(raField.getText())); // Convertendo RA para Integer
+                usuario.setSenha(passwordField.getText());
+                usuario.setNome(nomeField.getText());
 
-		});
+                // Converte o usuário para JSON
+                JSONController cadastroUsuarioController = new JSONController();
+                JSONObject res = cadastroUsuarioController.changeToJSON(usuario);
+
+                // Processa a resposta do servidor
+                processarCadastro(res);
+            }
+        });
         
         
         
@@ -113,7 +117,12 @@ public class CadastroView extends JFrame {
         });
     }
 
-    public String getNome() {
+    protected void processarCadastro(JSONObject res) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getNome() {
         return nomeField.getText();
     }
 
@@ -127,16 +136,5 @@ public class CadastroView extends JFrame {
 
     public void adicionarActionListenerCadastrar(ActionListener listener) {
         cadastrarButton.addActionListener(listener);
-    }
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                CadastroView cadastroView = new CadastroView();
-                cadastroView.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

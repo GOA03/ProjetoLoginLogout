@@ -16,7 +16,7 @@ public class ClienteView extends JFrame {
     private JButton btnConectar;
     private ClienteController controller;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {	
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {

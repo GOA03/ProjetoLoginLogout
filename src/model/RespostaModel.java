@@ -3,7 +3,7 @@ package model;
 public class RespostaModel {
 
 	private String operacao;
-	private int ra;
+	private String ra;
 	private String senha;
 	private String nome;
 	private int status;
@@ -34,11 +34,11 @@ public class RespostaModel {
 	public void setOperacao(String operacao) {
 		this.operacao = operacao;
 	}
-	public int getRa() {
+	public String getRa() {
 		return ra;
 	}
-	public void setRa(int ra) {
-		this.ra = ra;
+	public void setRa(Object object) {
+		this.ra = (String) object;
 	}
 	public String getSenha() {
 		return senha;
@@ -52,6 +52,4 @@ public class RespostaModel {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-	
-	
 }
