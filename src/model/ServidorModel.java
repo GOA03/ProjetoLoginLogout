@@ -84,7 +84,6 @@ public class ServidorModel {
                                         token = loginController.getRa(usuario.getRa());
                                         resposta.setToken(token);
                                         JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
-                                        System.out.println("Servidor -> Cliente: " + respostaJSON);
                                         saida.println(respostaJSON);
                                     } catch (SQLException e) {
                                         e.printStackTrace();
@@ -95,7 +94,13 @@ public class ServidorModel {
                                     resposta.setMsg("Credenciais incorretas.");
                                     resposta.setStatus(401);
                                     JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
-                                    System.out.println("Servidor -> Cliente: " + respostaJSON);
+                                    saida.println(respostaJSON);
+                                    break;
+                                }
+                                default: {
+                                    resposta.setMsg("Erro desconhecido.");
+                                    resposta.setStatus(401);
+                                    JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
                                     saida.println(respostaJSON);
                                     break;
                                 }
