@@ -92,9 +92,10 @@ public class ServidorModel {
                                     break;
                                 } 
                                 case ERRO_USUARIO_E_SENHA: {
-                                    resposta.setMsg("Login ou senha incorreto");
+                                    resposta.setMsg("Credenciais incorretas.");
                                     resposta.setStatus(401);
                                     JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+                                    System.out.println("Servidor -> Cliente: " + respostaJSON);
                                     saida.println(respostaJSON);
                                     break;
                                 }

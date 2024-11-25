@@ -98,6 +98,7 @@ public class JSONController {
         
         res.put("operacao", resposta.getOperacao());
         res.put("ra", resposta.getRa());
+        
         if (resposta.getSenha() != null) {
             res.put("senha", resposta.getSenha());
         }
@@ -107,6 +108,10 @@ public class JSONController {
         res.put("status", resposta.getStatus());
         if (resposta.getToken() != null) {
             res.put("token", resposta.getToken());
+        }
+        
+        if(resposta.getMsg() != null) {
+        	res.put("mensagem", resposta.getMsg());
         }
         return res;
     }
