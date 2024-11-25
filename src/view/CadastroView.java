@@ -1,12 +1,9 @@
 package view;
 
 import javax.swing.*;
-
 import org.json.simple.JSONObject;
-
 import controller.JSONController;
 import model.UsuarioModel;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,14 +38,14 @@ public class CadastroView extends JFrame {
 
         cadastrarButton = new JButton("Cadastrar");
         
-     // Adicionando ActionListener para o botão Cadastrar
+        // Adicionando ActionListener para o botão Cadastrar
         cadastrarButton.addActionListener(new ActionListener() {
             @SuppressWarnings("deprecation")
-			public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 // Cria um novo objeto UsuarioModel e preenche com os dados do formulário
                 UsuarioModel usuario = new UsuarioModel();
                 usuario.setOperacao("cadastrarUsuario");
-                usuario.setRa(Integer.parseInt(raField.getText())); // Convertendo RA para Integer
+                usuario.setRa(raField.getText()); // Alterado para String
                 usuario.setSenha(passwordField.getText());
                 usuario.setNome(nomeField.getText());
 
@@ -60,14 +57,7 @@ public class CadastroView extends JFrame {
                 processarCadastro(res);
             }
         });
-        
-        
-        
-        
-        
-        
-        
-        
+
         voltarButton = new JButton("Voltar");
 
         // Usando GroupLayout para garantir compatibilidade com WindowBuilder
@@ -118,11 +108,10 @@ public class CadastroView extends JFrame {
     }
 
     protected void processarCadastro(JSONObject res) {
-		// TODO Auto-generated method stub
-		
-	}
+        // TODO Auto-generated method stub
+    }
 
-	public String getNome() {
+    public String getNome() {
         return nomeField.getText();
     }
 

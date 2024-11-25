@@ -19,7 +19,7 @@ public class AvisosView extends JFrame {
     private JTextArea avisosArea;
     private JButton btnAtualizar;
 
-    public AvisosView(ClienteModel cliente, int token) {
+    public AvisosView(ClienteModel cliente, String token) { // Alterado para String
         setTitle("Avisos e Notícias");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 500);

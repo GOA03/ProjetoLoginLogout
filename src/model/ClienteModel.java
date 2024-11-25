@@ -20,16 +20,16 @@ public class ClienteModel {
     private BufferedReader entrada;
     private Thread threadEscuta;
     private JSONController jsonController;
-    private int token;
-	private AvisosView avisosView;
-	private LoginView loginView;
+    private String token; // Alterado para String
+    private AvisosView avisosView;
+    private LoginView loginView;
 
     // Conectar ao servidor (método sincronizado)
     public synchronized void conectar(String ip, int porta) throws IOException {
-    	this.socketEcho = new Socket(ip, porta);
-    	this.saida = new PrintWriter(socketEcho.getOutputStream(), true);
-    	this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
-    	this.jsonController = new JSONController();
+        this.socketEcho = new Socket(ip, porta);
+        this.saida = new PrintWriter(socketEcho.getOutputStream(), true);
+        this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
+        this.jsonController = new JSONController();
         
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
@@ -39,33 +39,30 @@ public class ClienteModel {
                 try {
                     String msg;
                     while ((msg = entrada.readLine()) != null) {
-                    	
                         System.out.println("Mensagem recebida: " + msg);
                         
-                        RespostaModel resposta = new RespostaModel();
-                        
-                        resposta = jsonController.changeResponseToJson(msg);
+                        RespostaModel resposta = jsonController.changeResponseToJson(msg);
                         
                         int status = resposta.getStatus();
-                        if (status == 0) {System.out.println("Não há status");}
+                        if (status == 0) {
+                            System.out.println("Não há status");
+                        }
                         
-                        Integer token = resposta.getToken();
+                        String token = resposta.getToken(); // Alterado para String
                         
                         String operacao = resposta.getOperacao();
-                        switch(operacao){    
-                        	case "login":{
-                        		if(status == 200) {
-                        			System.out.println("Token/Ra: "+ token);
-                        			logarAvisosView(token);
-                        			//fecharLoginView();
-                        		}else if(status == 401) {
-                        			
-                        			JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
-                        		}else {
-                        			System.out.println("Status informado não está cadastrado");
-                        		}
-                        	break;
-                        	}
+                        switch (operacao) {
+                            case "login": {
+                                if (status == 200) {
+                                    System.out.println("Token/Ra: " + token);
+                                    logarAvisosView(token);
+                                } else if (status == 401) {
+                                    JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                                } else {
+                                    System.out.println("Status informado não está cadastrado");
+                                }
+                                break;
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -76,7 +73,7 @@ public class ClienteModel {
         threadEscuta.start();
     }
 
-	// Enviar mensagem ao servidor (método sincronizado)
+    // Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
         saida.println(mensagem);
     }
@@ -105,18 +102,17 @@ public class ClienteModel {
         System.out.println("MENSAGEM ENVIADA AO SERVIDOR: " + msg.toString());
     }
     
-    public void logarAvisosView(int token) {
-    	
-    	this.token = token;
-    	
-    	// Fechar a tela de login antes de abrir a tela de avisos
+    public void logarAvisosView(String token) { // Alterado para String
+        this.token = token;
+        
+        // Fechar a tela de login antes de abrir a tela de avisos
         if (this.loginView != null) {
-        	System.err.println(this.loginView + "AAAAAAAAAAAAAAAAAAAAA LOGAR AVISO");
+            System.err.println(this.loginView + " AAAAAAAAAAAAAAAAAAAAA LOGAR AVISO");
             this.loginView.dispose(); // Fecha a tela de login
         }
 
         // Cria e torna a janela de AvisosView visível
         this.avisosView = new AvisosView(this, this.token);
         this.avisosView.setVisible(true);
-	}
+    }
 }
