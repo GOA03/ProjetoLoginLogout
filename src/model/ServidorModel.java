@@ -79,11 +79,12 @@ public class ServidorModel {
                             switch(loginValido) {
                                 case SUCESSO: {
                                     resposta.setStatus(200);
-                                    String token; // Alterado para String
+                                    String token;
                                     try {
                                         token = loginController.getRa(usuario.getRa());
                                         resposta.setToken(token);
                                         JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+                                        System.out.println("S -> C : " + respostaJSON);
                                         saida.println(respostaJSON);
                                     } catch (SQLException e) {
                                         e.printStackTrace();
@@ -94,6 +95,7 @@ public class ServidorModel {
                                     resposta.setMsg("Credenciais incorretas.");
                                     resposta.setStatus(401);
                                     JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+                                    System.out.println("S -> C : " + respostaJSON);
                                     saida.println(respostaJSON);
                                     break;
                                 }
@@ -101,6 +103,7 @@ public class ServidorModel {
                                     resposta.setMsg("Erro desconhecido.");
                                     resposta.setStatus(401);
                                     JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+                                    System.out.println("S -> C : " + respostaJSON);
                                     saida.println(respostaJSON);
                                     break;
                                 }
