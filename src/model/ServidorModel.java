@@ -55,65 +55,110 @@ public class ServidorModel {
         new Thread(() -> {
             JSONController jsonController = new JSONController();
             LoginController loginController = new LoginController();
-            
+
             try (
                 PrintWriter saida = new PrintWriter(socketCliente.getOutputStream(), true);
                 BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
             ) {
-                // Notificando a conexão do cliente
                 listener.onConexao(socketCliente.getInetAddress().toString());
                 System.out.println("Novo cliente conectado: " + socketCliente.getInetAddress());
 
                 String mensagemRecebida;
-                // Laço para ler as mensagens do cliente
                 while ((mensagemRecebida = entrada.readLine()) != null) {
                     System.out.println("Mensagem recebida: " + mensagemRecebida);
                     listener.onMensagemRecebida(mensagemRecebida);
                     String op = jsonController.getOperacao(mensagemRecebida);
+
                     switch(op) {
                         case "login": {
                             UsuarioModel usuario = jsonController.changeLoginToJSON(mensagemRecebida);
-                            LoginEnum loginValido = loginController.validarLogin(usuario);
                             RespostaModel resposta = new RespostaModel();
                             resposta.setOperacao("login");
+
+                            // Tratando erros de leitura do JSON
+                            if (usuario == null) {
+                                resposta.setStatus(401);
+                                resposta.setMsg("Não foi possível ler o JSON recebido.");
+                                enviarResposta(resposta, saida);
+                                break;
+                            }
+
+                            // Verificando se todos os campos foram preenchidos
+                            if (usuario.getRa() == null || usuario.getSenha() == null) {
+                                resposta.setStatus(401);
+                                resposta.setMsg("Os campos recebidos não são válidos.");
+                                enviarResposta(resposta, saida);
+                                break;
+                            }
+
+                            // Validações específicas dos campos
+                            if (!usuario.getRa().matches("\\d{7}")) { // RA deve ter 7 dígitos
+                                resposta.setStatus(401);
+                                resposta.setMsg("RA inválido. Deve conter apenas números e ter 7 dígitos.");
+                                enviarResposta(resposta, saida);
+                                break;
+                            }
+
+                            if (!usuario.getSenha().matches("[a-zA-Z]{8,20}")) { // Senha entre 8-20 caracteres, apenas letras
+                                resposta.setStatus(401);
+                                resposta.setMsg("Senha inválida. Deve conter entre 8 e 20 caracteres, apenas letras sem acentos.");
+                                enviarResposta(resposta, saida);
+                                break;
+                            }
+
+                            // Tentando validar as credenciais
+                            LoginEnum loginValido = loginController.validarLogin(usuario);
+                            resposta.setStatus(401); // Definido o status 401 para todos os erros
+
                             switch(loginValido) {
                                 case SUCESSO: {
-                                    resposta.setStatus(200);
-                                    String token;
+                                    resposta.setMsg("Login bem-sucedido.");
                                     try {
-                                        token = loginController.getRa(usuario.getRa());
+                                        String token = loginController.getRa(usuario.getRa());
                                         resposta.setToken(token);
-                                        JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
-                                        System.out.println("S -> C : " + respostaJSON);
-                                        saida.println(respostaJSON);
+                                        resposta.setStatus(200);
+                                        enviarResposta(resposta, saida);
                                     } catch (SQLException e) {
-                                        e.printStackTrace();
+                                        resposta.setMsg("O servidor não conseguiu conectar com o banco de dados.");
+                                        enviarResposta(resposta, saida);
                                     }
                                     break;
-                                } 
+                                }
                                 case ERRO_USUARIO_E_SENHA: {
                                     resposta.setMsg("Credenciais incorretas.");
-                                    resposta.setStatus(401);
-                                    JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
-                                    System.out.println("S -> C : " + respostaJSON);
-                                    saida.println(respostaJSON);
+                                    enviarResposta(resposta, saida);
+                                    break;
+                                }
+                                case ERRO_JSON: {
+                                    resposta.setMsg("Erro ao processar o JSON.");
+                                    enviarResposta(resposta, saida);
+                                    break;
+                                }
+                                case ERRO_VALIDACAO: {
+                                    resposta.setMsg("Os campos recebidos não são válidos.");
+                                    enviarResposta(resposta, saida);
+                                    break;
+                                }
+                                case ERRO_BANCO: {
+                                    resposta.setMsg("O servidor não conseguiu conectar com o banco de dados.");
+                                    enviarResposta(resposta, saida);
                                     break;
                                 }
                                 default: {
                                     resposta.setMsg("Erro desconhecido.");
-                                    resposta.setStatus(401);
-                                    JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
-                                    System.out.println("S -> C : " + respostaJSON);
-                                    saida.println(respostaJSON);
+                                    enviarResposta(resposta, saida);
                                     break;
                                 }
                             }
-                            break;                            
+                            break;
                         }
+                        default:
+                            // Caso a operação não seja 'login', retorna erro.
+                            System.out.println("Operação desconhecida: " + op);
+                            break;
                     }
                 }
             } catch (IOException e) {
-                // Tratamento de erro na comunicação
                 listener.onErro("Erro na comunicação com o cliente: " + e.getMessage());
                 System.err.println("Erro na comunicação com o cliente: " + e.getMessage());
             } finally {
@@ -121,7 +166,6 @@ public class ServidorModel {
                     socketCliente.close();
                     System.out.println("Conexão com o cliente fechada.");
                 } catch (IOException e) {
-                    // Erro ao fechar o socket
                     listener.onErro("Erro ao fechar a conexão com o cliente: " + e.getMessage());
                     System.err.println("Erro ao fechar a conexão com o cliente: " + e.getMessage());
                 }
@@ -129,14 +173,21 @@ public class ServidorModel {
         }).start();
     }
 
-	// Interface que define os métodos que o ouvinte (listener) deve implementar
-	public interface ServidorListener {
-		void onConexao(String clienteInfo);
+    private void enviarResposta(RespostaModel resposta, PrintWriter saida) {
+        JSONController jsonController = new JSONController();
+        JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+        System.out.println("S -> C : " + respostaJSON);
+        saida.println(respostaJSON);
+    }
 
-		void onMensagemRecebida(String mensagem);
+    // Interface que define os métodos que o ouvinte (listener) deve implementar
+    public interface ServidorListener {
+        void onConexao(String clienteInfo);
 
-		void onDesconexao();
+        void onMensagemRecebida(String mensagem);
 
-		void onErro(String erro);
-	}
+        void onDesconexao();
+
+        void onErro(String erro);
+    }
 }

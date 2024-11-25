@@ -48,7 +48,7 @@ public class ClienteModel {
                             System.out.println("Não há status");
                         }
                         
-                        String token = resposta.getToken(); // Alterado para String
+                        String token = resposta.getToken(); 
                         
                         String operacao = resposta.getOperacao();
                         switch (operacao) {
