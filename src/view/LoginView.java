@@ -68,7 +68,7 @@ public class LoginView extends JFrame {
         // Adicionar ActionListener para o botão Cadastrar
         registerButton.addActionListener(e -> {
             this.dispose(); // Fecha a tela de login
-            new CadastroView().setVisible(true); // Abre a tela de cadastro
+            new CadastroView(this.cliente).setVisible(true); // Abre a tela de cadastro
         });
 
         GroupLayout layout = new GroupLayout(panel);

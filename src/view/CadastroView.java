@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 import org.json.simple.JSONObject;
 import controller.JSONController;
+import model.ClienteModel;
 import model.UsuarioModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,8 +15,9 @@ public class CadastroView extends JFrame {
     private JTextField nomeField, raField;
     private JPasswordField passwordField;
     private JButton cadastrarButton, voltarButton;
+	private ClienteModel cliente;
 
-    public CadastroView() {
+    public CadastroView(ClienteModel cliente) {
         setTitle("Cadastro");
         setSize(400, 213);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,7 +110,11 @@ public class CadastroView extends JFrame {
     }
 
     protected void processarCadastro(JSONObject res) {
-        // TODO Auto-generated method stub
+    	if(this.cliente == null) {
+    		System.out.println("O cliente está nulo, inicie o cliente e o servidor");
+    	} else {
+    		this.cliente.enviarMensagem(res);
+    	}
     }
 
     public String getNome() {
