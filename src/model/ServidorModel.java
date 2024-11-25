@@ -84,6 +84,7 @@ public class ServidorModel {
                                         token = loginController.getRa(usuario.getRa());
                                         resposta.setToken(token);
                                         JSONObject respostaJSON = jsonController.changeResponseToJson(resposta);
+                                        System.out.println("Servidor -> Cliente: " + respostaJSON);
                                         saida.println(respostaJSON);
                                     } catch (SQLException e) {
                                         e.printStackTrace();
