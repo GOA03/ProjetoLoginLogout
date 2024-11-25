@@ -66,7 +66,11 @@ public class ClienteModel {
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                	if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
+                        JOptionPane.showMessageDialog(null, "O servidor foi fechado.", "Servidor Fechado", JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
