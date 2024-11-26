@@ -151,6 +151,9 @@ public class ServidorModel {
                                 }
                             }
                             break;
+                        } case "cadastrarUsuario" :{
+                        	
+                        	UsuarioModel usuario = jsonController.changeRegisterJSON(mensagemRecebida);
                         }
                         default:
                             // Caso a operação não seja 'login', retorna erro.

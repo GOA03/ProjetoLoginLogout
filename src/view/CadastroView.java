@@ -18,6 +18,8 @@ public class CadastroView extends JFrame {
 	private ClienteModel cliente;
 
     public CadastroView(ClienteModel cliente) {
+    	
+    	this.cliente = cliente;
         setTitle("Cadastro");
         setSize(400, 213);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

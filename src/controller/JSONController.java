@@ -159,4 +159,25 @@ public class JSONController {
         
         return respostaModel;
     }
+
+	public UsuarioModel changeRegisterJSON(String mensagemRecebida) {
+		
+		UsuarioModel usuario = new UsuarioModel();
+		JSONParser parser = new JSONParser();
+		
+		try {
+			
+			JSONObject jsonObject = (JSONObject) parser.parse(usuario);
+			
+			usuario.setNome((String) jsonObject.get("nome"));
+			usuario.setRa((String) jsonObject.get("ra"));
+			usuario.setSenha((String) jsonObject.get("senha"));
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return usuario;
+	}
 }
