@@ -2,12 +2,17 @@ package model;
 
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.json.simple.JSONObject;
 
+import controller.CadastroController;
 import controller.JSONController;
 import controller.LoginController;
+import dao.BancoDados;
+import dao.UsuarioDAO;
+import enums.CadastroEnum;
 import enums.LoginEnum;
 
 public class ServidorModel {
@@ -55,6 +60,7 @@ public class ServidorModel {
         new Thread(() -> {
             JSONController jsonController = new JSONController();
             LoginController loginController = new LoginController();
+            CadastroController cadastroController = new CadastroController();
 
             try (
                 PrintWriter saida = new PrintWriter(socketCliente.getOutputStream(), true);
@@ -151,12 +157,64 @@ public class ServidorModel {
                                 }
                             }
                             break;
-                        } case "cadastrarUsuario" :{
+                        } case "cadastrarUsuario": {
                         	
                         	UsuarioModel usuario = jsonController.changeRegisterJSON(mensagemRecebida);
+							CadastroEnum  resposta = cadastroController.validarCadastro(usuario);
+							RespostaModel res = new RespostaModel();
+							res.setOperacao("cadastrarUsuario");
+							
+							switch(resposta) {
+							
+			            	 case SUCESSO: {
+			            		 
+			            		 try {
+				            			Connection conn = BancoDados.conectar();
+				            			new UsuarioDAO(conn).adicionarUsuario(usuario);
+				            			res.setMsg("Cadastro realizado com sucesso!");
+				            			res.setStatus(201);
+					            		String ra;
+										try {
+											ra = loginController.getRa(usuario.getRa());
+											res.setToken(ra);
+										} catch (SQLException e) {
+											e.printStackTrace();
+										}
+										
+										JSONObject respostaJSON = jsonController.changeResponseToJson(res);
+										saida.println(respostaJSON);
+					            		System.out.println("S -> C: " + respostaJSON);
+				            			BancoDados.desconectar();
+				            			
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+			            		 break;
+			            		 
+			            	 }case ERRO: {
+			            		 
+			            		 res.setMsg("Os campos recebidos nao sao validos.");
+			            		 res.setStatus(404);
+			            		 res.setToken(usuario.getRa());
+			            		 JSONObject respostaJSON = jsonController.changeResponseToJson(res);
+			            		 saida.println(respostaJSON);
+			            		 System.out.println("S -> C: " + respostaJSON);
+			            		 break;
+			            		 
+			            	 }case RA_CADASTRADO: {
+			            		 res.setMsg("Não foi cadastrar pois o usuario informado ja existe");
+			            		 res.setStatus(422);
+			            		 res.setToken(usuario.getRa());
+			            		 JSONObject respostaJSON = jsonController.changeResponseToJson(res);
+			            		 saida.println(respostaJSON);
+			            		 System.out.println("S -> C: " + respostaJSON);
+			            		 break;
+		            	}
+		            			
+		              }
                         }
                         default:
-                            // Caso a operação não seja 'login', retorna erro.
+                            // Caso a operação não exista, retorna erro.
                             System.out.println("Operação desconhecida: " + op);
                             break;
                     }

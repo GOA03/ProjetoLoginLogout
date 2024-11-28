@@ -167,7 +167,7 @@ public class JSONController {
 		
 		try {
 			
-			JSONObject jsonObject = (JSONObject) parser.parse(usuario);
+			JSONObject jsonObject = (JSONObject) parser.parse(mensagemRecebida);
 			
 			usuario.setNome((String) jsonObject.get("nome"));
 			usuario.setRa((String) jsonObject.get("ra"));
