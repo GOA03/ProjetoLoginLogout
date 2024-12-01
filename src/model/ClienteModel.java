@@ -59,6 +59,11 @@ public class ClienteModel {
                                     if (status == 200) {
                                         logarAvisosView(token);
                                     } else if (status == 401) {
+                                    	
+                                    	if (mensagem == null || mensagem.trim().isEmpty()) { // Mensagem padrão
+                                            mensagem = "Erro desconhecido. Sem mensagem disponível."; 
+                                        }
+                                    	
                                     	JOptionPane.showMessageDialog(loginView, mensagem, "Erro de Login", JOptionPane.ERROR_MESSAGE);
                                     } else {
                                         System.out.println("Status informado não está cadastrado");
@@ -69,7 +74,16 @@ public class ClienteModel {
                                     if (status == 200) {
                                         System.out.println("LOGOUT -> " + token);
                                     } else {
-                                    	JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                                        // Obtenha a mensagem do servidor
+                                        mensagem = resposta.getMsg();
+
+                                        // Verifique se a mensagem está vazia ou nula
+                                        if (mensagem == null || mensagem.trim().isEmpty()) {
+                                            mensagem = "Erro desconhecido. Sem mensagem disponível."; // Mensagem padrão
+                                        }
+
+                                        // Exiba a mensagem de erro
+                                        JOptionPane.showMessageDialog(loginView, mensagem, "Erro de Logout", JOptionPane.ERROR_MESSAGE);
                                     }
                                     break;
                                 }
