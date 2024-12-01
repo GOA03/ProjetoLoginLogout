@@ -10,20 +10,26 @@ public class BancoDados {
 
 	private static Connection conn = null;
 	
-	public static Connection conectar() throws SQLException, IOException{
-		try {
-			
-			if (conn == null) {
-				
-				Properties props = carregarPropriedades();
-				String url = props.getProperty("dburl");
-				conn = DriverManager.getConnection(url, props);
-			}
-			
-			return conn;
-		} catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Erro ao conectar ao banco de dados: " + e.getMessage(), "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
-	        throw e;
+	public static Connection conectar() throws SQLException, IOException {
+	    try {
+	        if (conn == null) {
+	            Properties props = carregarPropriedades();
+	            String url = props.getProperty("dburl");
+	            conn = DriverManager.getConnection(url, props);
+	        }
+	        return conn;
+	    } catch (SQLException e) {
+	        // Captura a exceção de comunicação
+	        if (e instanceof com.mysql.cj.jdbc.exceptions.CommunicationsException) {
+	            String errorMessage = "Erro de comunicação com o servidor MySQL. Verifique se o servidor está em execução e a configuração da conexão.";
+	            JOptionPane.showMessageDialog(null, errorMessage, "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+	        } else {
+	            String errorMessage = "Erro ao conectar ao banco de dados: " + e.getMessage();
+	            JOptionPane.showMessageDialog(null, errorMessage, "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+	        }
+	        // Evita que a pilha de erro padrão seja exibida
+	        System.err.println("Ocorreu um erro ao tentar conectar ao banco de dados. Por favor, verifique a conexão.");
+	        return null; // Retorna null ou lance uma exceção personalizada, se necessário
 	    }
 	}
 	

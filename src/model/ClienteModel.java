@@ -44,11 +44,12 @@ public class ClienteModel {
                         RespostaModel resposta = jsonController.changeResponseToJson(msg);
                         
                         int status = resposta.getStatus();
+                        String mensagem = resposta.getMsg();
                         if (status == 0) {
                             System.out.println("Não há status");
                         }
                         
-                        String token = resposta.getToken(); 
+                        String token = resposta.getToken();
                         String operacao = resposta.getOperacao();
                         if (operacao == null) {
                             System.out.println("Operação não encontrada ou inválida.");
@@ -58,7 +59,7 @@ public class ClienteModel {
                                     if (status == 200) {
                                         logarAvisosView(token);
                                     } else if (status == 401) {
-                                        JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                                    	JOptionPane.showMessageDialog(loginView, mensagem, "Erro de Login", JOptionPane.ERROR_MESSAGE);
                                     } else {
                                         System.out.println("Status informado não está cadastrado");
                                     }
@@ -82,7 +83,9 @@ public class ClienteModel {
                 } catch (IOException e) {
                 	if (e.getMessage() != null && e.getMessage().contains("Connection reset")) {
                         JOptionPane.showMessageDialog(null, "O servidor foi fechado.", "Servidor Fechado", JOptionPane.WARNING_MESSAGE);
-                    } else {
+                	
+                        System.exit(0); // Fecha a aplicação
+                	} else {
                         e.printStackTrace();
                     }
                 }

@@ -70,17 +70,23 @@ public class UsuarioDAO {
 		}
 	}
 
-	public Boolean loginUsuario(String ra, String senha) { // Alterado para String
-		String query = "SELECT * FROM usuario WHERE ra = ? AND senha = ?";
-		try (PreparedStatement stmt = conn.prepareStatement(query)) {
-			stmt.setString(1, ra); // Alterado para String
-			stmt.setString(2, senha);
-			ResultSet rs = stmt.executeQuery();
-			return rs.next(); // Retorna true se houver um registro correspondente
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false; // Retorna false em caso de erro
-		}
+	public Boolean loginUsuario(String ra, String senha) {
+	    String query = "SELECT * FROM usuario WHERE ra = ? AND senha = ?";
+	    if (conn == null) {
+	        // Se a conexão é nula, exiba uma mensagem de erro e retorne false
+	        System.err.println("Erro: Conexão com o banco de dados não foi estabelecida.");
+	        return false;
+	    }
+	    
+	    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+	        stmt.setString(1, ra);
+	        stmt.setString(2, senha);
+	        ResultSet rs = stmt.executeQuery();
+	        return rs.next(); // Retorna true se houver um registro correspondente
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false; // Retorna false em caso de erro
+	    }
 	}
 
 	public Connection getConn() {

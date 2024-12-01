@@ -165,7 +165,7 @@ public class JSONController {
             }
             
             if (jsonObject.containsKey("ra")) {
-                respostaModel.setRa((String) jsonObject.get("ra")); // Mantendo como String
+                respostaModel.setRa((String) jsonObject.get("ra"));
             }
             
             if (jsonObject.containsKey("senha")) {
@@ -177,15 +177,15 @@ public class JSONController {
             }
             
             if (jsonObject.containsKey("status")) {
-                respostaModel.setStatus(Integer.parseInt(jsonObject.get("status").toString())); // Mantendo como int
+                respostaModel.setStatus(Integer.parseInt(jsonObject.get("status").toString()));
             }
             
             if (jsonObject.containsKey("token")) {
-                respostaModel.setToken((String) jsonObject.get("token")); // Mantendo como String
+                respostaModel.setToken((String) jsonObject.get("token"));
             }
             
-            if (jsonObject.containsKey("msg")) {
-                respostaModel.setMsg((String) jsonObject.get("msg"));
+            if (jsonObject.containsKey("mensagem")) {
+                respostaModel.setMsg((String) jsonObject.get("mensagem"));
             }
             
         } catch (ParseException e) {
