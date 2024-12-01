@@ -20,6 +20,10 @@ public class JSONController {
             user.put("ra", usuario.getRa());
         }
         
+        if (usuario.getRa() != null) {
+            user.put("token", usuario.getRa());
+        }
+        
         if (usuario.getSenha() != null) {
             user.put("senha", usuario.getSenha());
         }
@@ -114,6 +118,37 @@ public class JSONController {
         	res.put("mensagem", resposta.getMsg());
         }
         return res;
+    }
+    
+    @SuppressWarnings("unchecked") // Suprime o alerta de tipo não parametrizado
+    public JSONObject changeLogoutToJson(RespostaModel resposta) {
+    	
+        JSONObject res = new JSONObject(); // Usando JSONObject que internamente é um HashMap<String, Object>
+        
+        res.put("operacao", resposta.getOperacao());
+        
+        res.put("status", resposta.getStatus());
+        
+        res.put("token", resposta.getToken());
+        
+        return res;
+    }
+    
+    public UsuarioModel changeLogoutToJSON(String mensagemRecebida) {
+        UsuarioModel usuario = new UsuarioModel();
+        JSONParser parser = new JSONParser();
+        try {
+            JSONObject jsonObject = (JSONObject) parser.parse(mensagemRecebida);
+
+            String ra = (String) jsonObject.get("ra"); 
+            usuario.setRa(ra);
+
+            return usuario;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public RespostaModel changeResponseToJson(String msg) {

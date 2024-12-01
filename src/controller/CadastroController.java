@@ -21,14 +21,23 @@ public class CadastroController {
 		System.out.println("USUARIO: " + nomeValido + " RA: " + raValido + " Senha: " + senhaValida);
 
 		if (!nomeValido) {
+			System.out.println("SERVIDOR: Nome inválido!");
 			return CadastroEnum.ERRO;
+			
 		} else if (raValido == RaEnum.JA_CADASTRADO) {
+			System.out.println("SERVIDOR: Ra já cadastrado!");
 			return CadastroEnum.RA_CADASTRADO;
+			
 		} else if (raValido == RaEnum.CARACTERES_INVALIDOS) {
+			System.out.println("SERVIDOR: Ra inválido!");
 			return CadastroEnum.ERRO;
+			
 		} else if (!senhaValida) {
+			System.out.println("SERVIDOR: Senha inválida!");
 			return CadastroEnum.ERRO;
+			
 		} else {
+			System.out.println("SERVIDOR: Cadastrado com sucesso!");
 			return CadastroEnum.SUCESSO;
 		}
 	}

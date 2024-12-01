@@ -95,7 +95,6 @@ public class UsuarioDAO {
 			st.setString(1, ra); // Alterado para String
 			rs = st.executeQuery();
 			if (rs.next()) {
-				System.out.println("Ra Encontrado: " + ra);
 				String token = rs.getString("ra");
 				return token;
 			} else {

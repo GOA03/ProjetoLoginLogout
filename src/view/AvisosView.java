@@ -3,9 +3,15 @@ package view;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import org.json.simple.JSONObject;
+
+import controller.JSONController;
 import model.ClienteModel;
+import model.UsuarioModel;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AvisosView extends JFrame {
 
@@ -18,11 +24,16 @@ public class AvisosView extends JFrame {
     private JCheckBox chkEntretenimento;
     private JTextArea avisosArea;
     private JButton btnAtualizar;
+    private JButton btnLogout;
+	private ClienteModel cliente;
+	private String token;
 
-    public AvisosView(ClienteModel cliente, String token) { // Alterado para String
+    public AvisosView(ClienteModel cliente, String token) { 
+    	this.cliente = cliente;
+    	this.token = token;
         setTitle("Avisos e Notícias");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 500);
+        setBounds(100, 100, 450, 518);
         contentPane = new JPanel();
         contentPane.setBackground(SystemColor.windowBorder); // Cor de fundo da janela
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -31,7 +42,7 @@ public class AvisosView extends JFrame {
 
         JPanel panel = new JPanel();
         panel.setBackground(new Color(248, 248, 255)); // Cor de fundo do painel
-        panel.setBounds(20, 15, 400, 433);
+        panel.setBounds(20, 15, 400, 453);
         contentPane.add(panel);
         panel.setLayout(null);
 
@@ -82,6 +93,41 @@ public class AvisosView extends JFrame {
         JScrollPane scrollPane = new JScrollPane(avisosArea); // Adiciona barra de rolagem
         scrollPane.setBounds(20, 147, 360, 265);
         panel.add(scrollPane);
+
+        // Adicionando o botão de Logout
+        btnLogout = new JButton("Logout");
+        btnLogout.setFont(new Font("Poppins", Font.PLAIN, 12));
+        btnLogout.setBounds(150, 420, 100, 25); // Posição do botão
+        panel.add(btnLogout);
+        
+        btnLogout.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+                // Fechar a janela atual (AvisosView)
+                dispose(); 
+
+                // Realizar o logout
+                UsuarioModel usuario = new UsuarioModel();
+                usuario.setOperacao("logout");
+                usuario.setRa(token);
+
+                JSONController loginController = new JSONController();
+                JSONObject res = loginController.changeToJSON(usuario);
+
+                logoutUsuario(res);
+
+                // Abrir a tela de login após o logout
+                new LoginView(cliente).setVisible(true);
+            }
+        });
+    }
+    
+    public void logoutUsuario(JSONObject res) {
+        if (this.cliente == null) {
+            System.err.println("O cliente está nulo, você deve primeiro inicializar o cliente e o servidor");
+        } else {
+            this.cliente.enviarMensagem(res);
+        }
     }
 
     // Getters para os checkboxes e botão de cadastro
@@ -109,11 +155,19 @@ public class AvisosView extends JFrame {
         return btnAtualizar;
     }
 
+    public JButton getBtnLogout() { 
+        return btnLogout;
+    }
+
     public JTextArea getAvisosArea() {
         return avisosArea;
     }
+    
+    public String getToken() {
+		return token;
+	}
 
-    // Método para adicionar avisos/notícias à área de texto
+	// Método para adicionar avisos/notícias à área de texto
     public void adicionarAviso(String aviso) {
         avisosArea.append(aviso + "\n");
     }

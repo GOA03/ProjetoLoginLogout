@@ -20,7 +20,7 @@ public class ClienteModel {
     private BufferedReader entrada;
     private Thread threadEscuta;
     private JSONController jsonController;
-    private String token; // Alterado para String
+    private String token;
     private AvisosView avisosView;
     private LoginView loginView;
 
@@ -39,7 +39,7 @@ public class ClienteModel {
                 try {
                     String msg;
                     while ((msg = entrada.readLine()) != null) {
-                        System.out.println("Mensagem recebida: " + msg);
+                        System.out.println("SERVIDOR -> CLIENTE: " + msg);
                         
                         RespostaModel resposta = jsonController.changeResponseToJson(msg);
                         
@@ -49,19 +49,33 @@ public class ClienteModel {
                         }
                         
                         String token = resposta.getToken(); 
-                        
                         String operacao = resposta.getOperacao();
-                        switch (operacao) {
-                            case "login": {
-                                if (status == 200) {
-                                    System.out.println("Token/Ra: " + token);
-                                    logarAvisosView(token);
-                                } else if (status == 401) {
-                                    JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
-                                } else {
-                                    System.out.println("Status informado não está cadastrado");
+                        if (operacao == null) {
+                            System.out.println("Operação não encontrada ou inválida.");
+                        } else {
+                            switch (operacao) {
+                                case "login": {
+                                    if (status == 200) {
+                                        logarAvisosView(token);
+                                    } else if (status == 401) {
+                                        JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                                    } else {
+                                        System.out.println("Status informado não está cadastrado");
+                                    }
+                                    break;
                                 }
-                                break;
+                                case "logout": {
+                                    if (status == 200) {
+                                        System.out.println("LOGOUT -> " + token);
+                                    } else {
+                                    	JOptionPane.showMessageDialog(loginView, "Login ou senha incorretos. Tente novamente.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                    break;
+                                }
+
+                                default:
+                                    System.out.println("Operação inválida ou não reconhecida.");
+                                    break;
                             }
                         }
                     }
@@ -102,11 +116,12 @@ public class ClienteModel {
 
     // Método para enviar um objeto JSONObject
     public void enviarMensagem(JSONObject msg) {
+    	System.out.println("CLIENTE -> SERVIDOR: " + msg.toString());
         this.saida.println(msg.toString()); // Convertendo JSONObject para String
-        System.out.println("MENSAGEM ENVIADA AO SERVIDOR: " + msg.toString());
+        
     }
     
-    public void logarAvisosView(String token) { // Alterado para String
+    public void logarAvisosView(String token) {
         this.token = token;
         
         // Fechar a tela de login antes de abrir a tela de avisos
