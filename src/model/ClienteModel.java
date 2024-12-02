@@ -151,4 +151,8 @@ public class ClienteModel {
         this.avisosView = new AvisosView(this, this.token);
         this.avisosView.setVisible(true);
     }
+
+	public void setLoginView(LoginView loginView) {
+		this.loginView = loginView;
+	}
 }

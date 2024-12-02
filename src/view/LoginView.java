@@ -110,6 +110,7 @@ public class LoginView extends JFrame {
         if (this.cliente == null) {
             System.err.println("O cliente está nulo, você deve primeiro inicializar o cliente e o servidor");
         } else {
+        	this.cliente.setLoginView(this);
             this.cliente.enviarMensagem(res);
         }
     }
