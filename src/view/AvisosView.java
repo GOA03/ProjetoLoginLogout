@@ -34,6 +34,9 @@ public class AvisosView extends JFrame {
         setTitle("Avisos e Notícias");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 450, 518);
+        
+        setLocationRelativeTo(null); // Centraliza a janela na tela
+        
         contentPane = new JPanel();
         contentPane.setBackground(SystemColor.windowBorder); // Cor de fundo da janela
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 
 import controller.JSONController;
 import view.AvisosView;
+import view.CadastroView;
 import view.LoginView;
 
 public class ClienteModel {
@@ -23,6 +24,7 @@ public class ClienteModel {
     private String token;
     private AvisosView avisosView;
     private LoginView loginView;
+	private CadastroView cadastroView;
 
     // Conectar ao servidor (método sincronizado)
     public synchronized void conectar(String ip, int porta) throws IOException {
@@ -70,6 +72,26 @@ public class ClienteModel {
                                     }
                                     break;
                                 }
+                                case "cadastrarUsuario": {
+                                    if (status == 201) {
+                                        JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                                        FecharTelaCadastro();
+                                        abrirLoginView();
+                                    } else if (status == 404) {
+                                        if (mensagem == null || mensagem.trim().isEmpty()) {
+                                            mensagem = "Os campos recebidos não são válidos."; 
+                                        }
+                                        JOptionPane.showMessageDialog(null, mensagem, "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                                    } else if (status == 422) {
+                                        if (mensagem == null || mensagem.trim().isEmpty()) {
+                                            mensagem = "O RA informado já está cadastrado."; 
+                                        }
+                                        JOptionPane.showMessageDialog(null, mensagem, "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
+                                    } else {
+                                        System.out.println("Status informado não está cadastrado");
+                                    }
+                                    break;
+                                }
                                 case "logout": {
                                     if (status == 200) {
                                         System.out.println("LOGOUT -> " + token);
@@ -104,11 +126,21 @@ public class ClienteModel {
                     }
                 }
             }
+
+			private void abrirLoginView() {
+				new LoginView(this.cliente).setVisible(true);
+			}
         });
         threadEscuta.start();
     }
 
-    // Enviar mensagem ao servidor (método sincronizado)
+    protected void FecharTelaCadastro() {
+    	if (this.cadastroView != null) {
+    		this.cadastroView.dispose();
+    	}
+	}
+
+	// Enviar mensagem ao servidor (método sincronizado)
     public synchronized void enviarMensagem(String mensagem) throws IOException {
         saida.println(mensagem);
     }
@@ -143,7 +175,6 @@ public class ClienteModel {
         
         // Fechar a tela de login antes de abrir a tela de avisos
         if (this.loginView != null) {
-            System.err.println(this.loginView + " AAAAAAAAAAAAAAAAAAAAA LOGAR AVISO");
             this.loginView.dispose(); // Fecha a tela de login
         }
 
@@ -154,5 +185,9 @@ public class ClienteModel {
 
 	public void setLoginView(LoginView loginView) {
 		this.loginView = loginView;
+	}
+
+	public void setCadastroView(CadastroView cadastroView) {
+		this.cadastroView = cadastroView;
 	}
 }

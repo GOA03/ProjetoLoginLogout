@@ -185,10 +185,9 @@ public class ServidorModel {
 									}
 	
 									JSONObject respostaJSON = jsonController.changeResponseToJson(res);
-									saida.println(respostaJSON);
 									System.out.println("S -> C: " + respostaJSON);
 									BancoDados.desconectar();
-	
+									saida.println(respostaJSON);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}

@@ -115,6 +115,7 @@ public class CadastroView extends JFrame {
     	if(this.cliente == null) {
     		System.out.println("O cliente está nulo, inicie o cliente e o servidor");
     	} else {
+    		this.cliente.setCadastroView(this);
     		this.cliente.enviarMensagem(res);
     	}
     }
