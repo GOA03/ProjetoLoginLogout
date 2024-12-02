@@ -33,6 +33,8 @@ public class ClienteModel {
         this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
         this.jsonController = new JSONController();
         
+        final ClienteModel clienteModel = this; 
+        
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
             @Override
@@ -76,7 +78,7 @@ public class ClienteModel {
                                     if (status == 201) {
                                         JOptionPane.showMessageDialog(null, "Cadastro realizado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                                         FecharTelaCadastro();
-                                        abrirLoginView();
+                                        new LoginView(clienteModel).setVisible(true);
                                     } else if (status == 404) {
                                         if (mensagem == null || mensagem.trim().isEmpty()) {
                                             mensagem = "Os campos recebidos não são válidos."; 
@@ -126,10 +128,6 @@ public class ClienteModel {
                     }
                 }
             }
-
-			private void abrirLoginView() {
-				new LoginView(this.cliente).setVisible(true);
-			}
         });
         threadEscuta.start();
     }

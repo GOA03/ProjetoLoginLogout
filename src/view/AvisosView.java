@@ -107,7 +107,7 @@ public class AvisosView extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
                 // Fechar a janela atual (AvisosView)
-                dispose(); 
+                dispose();
 
                 // Realizar o logout
                 UsuarioModel usuario = new UsuarioModel();
