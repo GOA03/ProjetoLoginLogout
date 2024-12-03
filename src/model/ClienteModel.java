@@ -81,7 +81,7 @@ public class ClienteModel {
                                         new LoginView(clienteModel).setVisible(true);
                                     } else if (status == 404) {
                                         if (mensagem == null || mensagem.trim().isEmpty()) {
-                                            mensagem = "Os campos recebidos não são válidos."; 
+                                            mensagem = "Os campos recebidos não são válidos.";
                                         }
                                         JOptionPane.showMessageDialog(null, mensagem, "Erro de Cadastro", JOptionPane.ERROR_MESSAGE);
                                     } else if (status == 422) {
@@ -97,6 +97,7 @@ public class ClienteModel {
                                 case "logout": {
                                     if (status == 200) {
                                         System.out.println("LOGOUT -> " + token);
+                                        JOptionPane.showMessageDialog(null, mensagem);
                                     } else {
                                         // Obtenha a mensagem do servidor
                                         mensagem = resposta.getMsg();
@@ -113,6 +114,7 @@ public class ClienteModel {
                                 }
 
                                 default:
+                                	JOptionPane.showMessageDialog(null, mensagem + ": " + operacao);
                                     System.out.println("Operação inválida ou não reconhecida.");
                                     break;
                             }
@@ -165,7 +167,6 @@ public class ClienteModel {
     public void enviarMensagem(JSONObject msg) {
     	System.out.println("CLIENTE -> SERVIDOR: " + msg.toString());
         this.saida.println(msg.toString()); // Convertendo JSONObject para String
-        
     }
     
     public void logarAvisosView(String token) {

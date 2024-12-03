@@ -215,4 +215,17 @@ public class JSONController {
 		
 		return usuario;
 	}
+	
+	 @SuppressWarnings("unchecked") // Suprime o alerta de tipo não parametrizado
+	public JSONObject changeErroGlobalToJson(RespostaModel resposta) {
+		 JSONObject res = new JSONObject(); // Usando JSONObject que internamente é um HashMap<String, Object>
+	        
+	        res.put("operacao", resposta.getOperacao());
+	        
+	        res.put("status", resposta.getStatus());
+	        
+	        res.put("mensagem", resposta.getMsg());
+	        
+	        return res;
+	}
 }

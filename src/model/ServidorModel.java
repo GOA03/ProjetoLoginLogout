@@ -126,6 +126,7 @@ public class ServidorModel {
 									resposta.setStatus(200);
 									resposta.setRa(token);
 									enviarResposta(resposta, saida);
+									
 								} catch (SQLException e) {
 									resposta.setMsg("O servidor não conseguiu conectar com o banco de dados.");
 									enviarResposta(resposta, saida);
@@ -217,19 +218,28 @@ public class ServidorModel {
 						}
 					}
 					case "logout":{
+						
 						UsuarioModel usuario = jsonController.changeLogoutToJSON(mensagemRecebida);
-		            	  RespostaModel resposta = new RespostaModel();
-		            	  resposta.setOperacao("logout");
-		            	  resposta.setStatus(200);
-		            	  resposta.setToken(usuario.getRa());
-		            	  JSONObject respostaJSON = jsonController.changeLogoutToJson(resposta);
-		            	  saida.println(respostaJSON);
-		            	  System.out.println("S -> C: " + respostaJSON);
-		            	  break;
+		            	RespostaModel resposta = new RespostaModel();
+		            	
+		            	resposta.setOperacao("logout");
+		            	resposta.setStatus(200);
+		            	resposta.setToken(usuario.getRa());
+		            	
+		            	JSONObject respostaJSON = jsonController.changeLogoutToJson(resposta);
+		            	saida.println(respostaJSON);
+		            	System.out.println("S -> C: " + respostaJSON);
+		            	break;
 		              }
 					default:
 						// Caso a operação não exista, retorna erro.
+						RespostaModel resposta = new RespostaModel();
+						resposta.setStatus(401);
+						resposta.setOperacao(op);
+						resposta.setMsg("Operacao não encontrada");
+						JSONObject respostaJSON = jsonController.changeErroGlobalToJson(resposta);
 						System.out.println("Operação desconhecida: " + op);
+						saida.println(respostaJSON);
 						break;
 					}
 				}

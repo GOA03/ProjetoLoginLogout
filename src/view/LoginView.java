@@ -21,7 +21,7 @@ public class LoginView extends JFrame {
     public LoginView(ClienteModel cliente) {
         this.cliente = cliente;
 
-        setTitle("Login");
+        setTitle("Login"); 
         setSize(400, 184);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

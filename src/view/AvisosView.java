@@ -106,8 +106,6 @@ public class AvisosView extends JFrame {
         btnLogout.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-                // Fechar a janela atual (AvisosView)
-                dispose();
 
                 // Realizar o logout
                 UsuarioModel usuario = new UsuarioModel();
