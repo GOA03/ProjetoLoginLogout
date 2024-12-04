@@ -167,6 +167,8 @@ public class ServidorModel {
 						CadastroEnum resposta = cadastroController.validarCadastro(usuario);
 						RespostaModel res = new RespostaModel();
 						res.setOperacao("cadastrarUsuario");
+						
+						
 
 						switch (resposta) {
 
@@ -196,8 +198,8 @@ public class ServidorModel {
 	
 							}
 							case ERRO: {
-	
-								res.setMsg("Os campos recebidos nao sao validos.");
+	 
+								res.setMsg("Os campos recebidos não são válidos.");
 								res.setStatus(404);
 								res.setToken(usuario.getRa());
 								JSONObject respostaJSON = jsonController.changeResponseToJson(res);
@@ -216,6 +218,7 @@ public class ServidorModel {
 								break;
 							}
 						}
+						break;
 					}
 					case "logout":{
 						

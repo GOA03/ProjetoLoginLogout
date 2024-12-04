@@ -21,8 +21,7 @@ public class BancoDados {
 	    } catch (SQLException e) {
 	        // Captura a exceção de comunicação
 	        if (e instanceof com.mysql.cj.jdbc.exceptions.CommunicationsException) {
-	            String errorMessage = "Erro de comunicação com o servidor MySQL. Verifique se o servidor está em execução e a configuração da conexão.";
-	            JOptionPane.showMessageDialog(null, errorMessage, "Erro de Conexão", JOptionPane.ERROR_MESSAGE);
+	            JOptionPane.showMessageDialog(null, "Erro de comunicação com o servidor MySQL. Verifique se o servidor está em execução e a configuração da conexão.");
 	        } else {
 	            String errorMessage = "Erro ao conectar ao banco de dados: " + e.getMessage();
 	            JOptionPane.showMessageDialog(null, errorMessage, "Erro de Conexão", JOptionPane.ERROR_MESSAGE);

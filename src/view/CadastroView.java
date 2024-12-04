@@ -51,7 +51,7 @@ public class CadastroView extends JFrame {
                 usuario.setOperacao("cadastrarUsuario");
                 usuario.setRa(raField.getText()); // Alterado para String
                 usuario.setSenha(passwordField.getText());
-                usuario.setNome(nomeField.getText());
+                usuario.setNome(nomeField.getText().toUpperCase());
 
                 // Converte o usuário para JSON
                 JSONController cadastroUsuarioController = new JSONController();

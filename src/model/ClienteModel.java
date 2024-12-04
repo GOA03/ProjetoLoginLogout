@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import controller.JSONController;
+import view.AdminView;
 import view.AvisosView;
 import view.CadastroView;
 import view.LoginView;
@@ -33,11 +34,16 @@ public class ClienteModel {
         this.entrada = new BufferedReader(new InputStreamReader(socketEcho.getInputStream()));
         this.jsonController = new JSONController();
         
-        final ClienteModel clienteModel = this; 
+        final ClienteModel clienteModel = this;
+        
         
         // Criar e iniciar a thread de escuta
         threadEscuta = new Thread(new Runnable() {
-            @Override
+
+			@SuppressWarnings("unused")
+			private Object avisosView;
+
+			@Override
             public void run() {
                 System.out.println("Escutando mensagens do servidor");
                 try {
@@ -61,7 +67,15 @@ public class ClienteModel {
                             switch (operacao) {
                                 case "login": {
                                     if (status == 200) {
-                                        logarAvisosView(token);
+                                    	if ("2376342".equals(token)) {
+                                            // Abre a tela AdminView
+                                    		loginView.dispose();
+                                            new AdminView(clienteModel, token).setVisible(true);
+                                        } else {
+                                            // Se o token não for 2376342, abre a tela AvisosView
+                                            logarAvisosView(token);
+                                        }
+                                    	
                                     } else if (status == 401) {
                                     	
                                     	if (mensagem == null || mensagem.trim().isEmpty()) { // Mensagem padrão
@@ -96,8 +110,19 @@ public class ClienteModel {
                                 }
                                 case "logout": {
                                     if (status == 200) {
+                                    	System.out.println(operacao);
                                         System.out.println("LOGOUT -> " + token);
-                                        JOptionPane.showMessageDialog(null, mensagem);
+                                        
+                                        // Fechar a tela de avisos após o logout
+                                        if (clienteModel.getAvisosView() != null) { // Use o método getter para acessar avisosView
+                                            clienteModel.getAvisosView().dispose(); // Fecha a tela de avisos
+                                        }
+                                        
+                                        JOptionPane.showMessageDialog(null, "Logout realizado com sucesso!");
+                                        
+                                        // Abrir a tela de login após o logout
+                                        new LoginView(clienteModel).setVisible(true);
+                                        
                                     } else {
                                         // Obtenha a mensagem do servidor
                                         mensagem = resposta.getMsg();
@@ -134,10 +159,19 @@ public class ClienteModel {
         threadEscuta.start();
     }
 
-    protected void FecharTelaCadastro() {
+    protected AvisosView getAvisosView() {
+		
+		return this.avisosView;
+	}
+
+	protected void FecharTelaCadastro() {
     	if (this.cadastroView != null) {
     		this.cadastroView.dispose();
     	}
+	}
+
+	public void setAvisosView(AvisosView avisosView) {
+		this.avisosView = avisosView;
 	}
 
 	// Enviar mensagem ao servidor (método sincronizado)

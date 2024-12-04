@@ -116,9 +116,6 @@ public class AvisosView extends JFrame {
                 JSONObject res = loginController.changeToJSON(usuario);
 
                 logoutUsuario(res);
-
-                // Abrir a tela de login após o logout
-                new LoginView(cliente).setVisible(true);
             }
         });
     }
@@ -166,6 +163,10 @@ public class AvisosView extends JFrame {
     
     public String getToken() {
 		return token;
+	}
+    
+    public AvisosView getAvisosView() {
+		return this;
 	}
 
 	// Método para adicionar avisos/notícias à área de texto
